@@ -1,24 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 
-namespace Archipelago
+namespace KitchenArchipelago.Persistence
 {
     public enum Setting
     {
         [Setting("bEnabled", false, "Whether or not this extension is enabled (for this profile).")]
         Enabled,
-        
+
         [Setting("sHost", "archipelago.gg:", "Archipelago host name")]
         Host,
 
-        [Setting("sName", "", "Archipelago user name")]
-        Name,
+        [Setting("sUser", "", "Archipelago room user name")]
+        User,
 
-        [Setting("lUnlockedAppliances", new string[] { }, "Unlocked appliances")]
+        [Setting("sPassword", "", "Archipelago room password")]
+        Password,
+
+        [Setting("aUnlockedAppliances", new string[] { }, "Unlocked appliances")]
         UnlockedAppliances,
 
-        [Setting("lChecksCompleted", new string[] { }, "Checks completed")]
+        [Setting("aChecksCompleted", new string[] { }, "Checks completed")]
         ChecksCompleted,
     }
 

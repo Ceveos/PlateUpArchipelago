@@ -1,13 +1,11 @@
-﻿using Archipelago;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
-namespace KitchenArchipelago
+namespace KitchenArchipelago.Persistence
 {
     public abstract class SettingEntry
     {
@@ -37,7 +35,7 @@ namespace KitchenArchipelago
         private Kitchen.PlayerProfile _profile;
         private Dictionary<string, SettingEntry> _persistentSettings = new Dictionary<string, SettingEntry>();
 
-        private ProfilePersistence() {}
+        private ProfilePersistence() { }
 
         public T Get<T>(string name, T defaultValue = default)
         {
@@ -103,10 +101,10 @@ namespace KitchenArchipelago
 
         public void Save()
         {
-            Archipelago.LogInfo($"Saving settings for user {_profile.Name}.");
+            KitchenArchipelago.LogInfo($"Saving settings for user {_profile.Name}.");
             string jsonStr = JsonConvert.SerializeObject(_persistentSettings, Formatting.Indented);
             File.WriteAllText(GetFilePath(), jsonStr);
-            Archipelago.LogInfo($"Settings saved successfully for user {_profile.Name}.");
+            KitchenArchipelago.LogInfo($"Settings saved successfully for user {_profile.Name}.");
         }
 
         private void setProfile(Kitchen.PlayerProfile profile)
@@ -117,12 +115,12 @@ namespace KitchenArchipelago
 
         public static ProfilePersistence Load(Kitchen.PlayerProfile profile, bool forceReload = false)
         {
-            Archipelago.LogInfo($"Loading settings for user {profile.Name}.");
+            KitchenArchipelago.LogInfo($"Loading settings for user {profile.Name}.");
 
             // If user is already loaded, return profile.
             if (!forceReload && Instance._profile == profile)
             {
-                Archipelago.LogInfo($"Profile already loaded. Returning early.");
+                KitchenArchipelago.LogInfo($"Profile already loaded. Returning early.");
                 return Instance;
             }
 
@@ -131,7 +129,7 @@ namespace KitchenArchipelago
             var filePath = Instance.GetFilePath();
             if (!File.Exists(filePath))
             {
-                Archipelago.LogInfo($"Setings file does not exist for user {profile.Name}. Creating default config.");
+                KitchenArchipelago.LogInfo($"Setings file does not exist for user {profile.Name}. Creating default config.");
                 Instance.CreateDefaultConfig();
                 return Instance;
             }
@@ -139,14 +137,14 @@ namespace KitchenArchipelago
             try
             {
                 var jsonStr = File.ReadAllText(filePath);
-                Instance._persistentSettings = JsonConvert.DeserializeObject<Dictionary<string,SettingEntry>>(jsonStr);
+                Instance._persistentSettings = JsonConvert.DeserializeObject<Dictionary<string, SettingEntry>>(jsonStr);
 
-                Archipelago.LogInfo($"Loaded settings for user {profile.Name} successfully.");
+                KitchenArchipelago.LogInfo($"Loaded settings for user {profile.Name} successfully.");
             }
             catch (Exception e)
             {
-                Archipelago.LogError($"Error loading settings for user {profile.Name}: {e.Message}");
-                Archipelago.LogError($"Resetting back to default values.");
+                KitchenArchipelago.LogError($"Error loading settings for user {profile.Name}: {e.Message}");
+                KitchenArchipelago.LogError($"Resetting back to default values.");
                 Instance.CreateDefaultConfig();
 
             }
@@ -158,7 +156,7 @@ namespace KitchenArchipelago
         {
             Set("bActive", false);
             Set("sHost", "archipelago.gg:");
-            Set("sName", "");
+            Set("sUser", "");
         }
 
         public string GetFilePath()
