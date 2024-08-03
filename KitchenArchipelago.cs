@@ -1,8 +1,7 @@
-﻿using Archipelago;
-using Archipelago.MultiClient.Net;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Kitchen;
 using KitchenArchipelago.Archipelago;
+using KitchenArchipelago.Persistence;
 using KitchenLib;
 using KitchenMods;
 using System.Linq;

@@ -1,5 +1,6 @@
 ﻿using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
+using KitchenArchipelago.Persistence;
 using System;
 
 namespace KitchenArchipelago.Archipelago
