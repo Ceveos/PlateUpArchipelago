@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Archipelago;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -58,6 +59,17 @@ namespace KitchenArchipelago
                 return newEntry.Value;
             }
         }
+        public T Get<T>(Setting setting)
+        {
+            var attribute = setting.GetSettingAttribute();
+
+            if (attribute == null)
+                throw new InvalidOperationException("Setting not found");
+
+            var defaultValue = (T)Convert.ChangeType(attribute.DefaultValue, typeof(T));
+
+            return Get(attribute.Name, defaultValue);
+        }
 
         public void Set<T>(string name, T value)
         {
@@ -77,6 +89,16 @@ namespace KitchenArchipelago
                 var newEntry = new SettingEntry<T>(name, value);
                 _persistentSettings[name] = newEntry;
             }
+        }
+
+        public void Set<T>(Setting setting, T value)
+        {
+            var attribute = setting.GetSettingAttribute();
+
+            if (attribute == null)
+                throw new InvalidOperationException("Setting not found");
+
+            Set(attribute.Name, value);
         }
 
         public void Save()
