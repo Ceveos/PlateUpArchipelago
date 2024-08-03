@@ -1,21 +1,22 @@
-﻿using KitchenLib;
-using KitchenLib.Event;
+﻿using HarmonyLib;
+using Kitchen;
+using KitchenLib;
 using KitchenMods;
 using System.Reflection;
 using UnityEngine;
 
 // Namespace should have "Kitchen" in the beginning
-namespace KitchenMyMod
+namespace KitchenArchipelago
 {
-    public class Mod : BaseMod, IModSystem
+    public class Archipelago : BaseMod, IModSystem
     {
         // GUID must be unique and is recommended to be in reverse domain name notation
         // Mod Name is displayed to the player and listed in the mods menu
         // Mod Version must follow semver notation e.g. "1.2.3"
-        public const string MOD_GUID = "com.example.mymod";
-        public const string MOD_NAME = "My Mod";
+        public const string MOD_GUID = "dev.casasola.plateup-archipelago";
+        public const string MOD_NAME = "Archipelago";
         public const string MOD_VERSION = "0.1.0";
-        public const string MOD_AUTHOR = "My Name";
+        public const string MOD_AUTHOR = "Alex";
         public const string MOD_GAMEVERSION = ">=1.1.4";
         // Game version this mod is designed for in semver
         // e.g. ">=1.1.3" current and all future
@@ -28,45 +29,33 @@ namespace KitchenMyMod
         public const bool DEBUG_MODE = false;
 #endif
 
-        public static AssetBundle Bundle;
+        private static readonly Harmony m_harmony = new(MOD_GUID);
+        private ProfilePersistence m_settings;
 
-        public Mod() : base(MOD_GUID, MOD_NAME, MOD_AUTHOR, MOD_VERSION, MOD_GAMEVERSION, Assembly.GetExecutingAssembly()) { }
+        public Archipelago() : base(MOD_GUID, MOD_NAME, MOD_AUTHOR, MOD_VERSION, MOD_GAMEVERSION, Assembly.GetExecutingAssembly()) { }
 
         protected override void OnInitialise()
         {
+            m_harmony.PatchAll(Assembly.GetExecutingAssembly());
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
+            Players.Main.OnPlayerInfoChanged += OnPlayerInfoChanged;
         }
 
-        private void AddGameData()
+        private void OnPlayerInfoChanged()
         {
-            LogInfo("Attempting to register game data...");
-
-            // AddGameDataObject<MyCustomGDO>();
-
-            LogInfo("Done loading game data.");
+            foreach (PlayerInfo player in Players.Main.All())
+            {
+                if (player.IsLocalUser && player.HasProfile)
+                {
+                    m_settings = ProfilePersistence.Load(player.Profile);
+                }
+            }
         }
 
         protected override void OnUpdate()
         {
         }
 
-        protected override void OnPostActivate(KitchenMods.Mod mod)
-        {
-            // TODO: Uncomment the following if you have an asset bundle.
-            // TODO: Also, make sure to set EnableAssetBundleDeploy to 'true' in your ModName.csproj
-
-            // LogInfo("Attempting to load asset bundle...");
-            // Bundle = mod.GetPacks<AssetBundleModPack>().SelectMany(e => e.AssetBundles).First();
-            // LogInfo("Done loading asset bundle.");
-
-            // Register custom GDOs
-            AddGameData();
-
-            // Perform actions when game data is built
-            Events.BuildGameDataEvent += delegate (object s, BuildGameDataEventArgs args)
-            {
-            };
-        }
         #region Logging
         public static void LogInfo(string _log) { Debug.Log($"[{MOD_NAME}] " + _log); }
         public static void LogWarning(string _log) { Debug.LogWarning($"[{MOD_NAME}] " + _log); }
