@@ -2,6 +2,7 @@
 using Kitchen;
 using KitchenLib;
 using KitchenMods;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -43,12 +44,15 @@ namespace KitchenArchipelago
 
         private void OnPlayerInfoChanged()
         {
-            foreach (PlayerInfo player in Players.Main.All())
+            PlayerInfo? player = Players.Main.All().FirstOrDefault(player => player.IsLocalUser && player.HasProfile);
+
+            if (player.HasValue)
             {
-                if (player.IsLocalUser && player.HasProfile)
-                {
-                    m_settings = ProfilePersistence.Load(player.Profile);
-                }
+                m_settings = ProfilePersistence.Load(player.Value.Profile);
+            }
+            else
+            {
+                m_settings = null;
             }
         }
 
