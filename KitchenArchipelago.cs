@@ -6,7 +6,6 @@ using KitchenLib;
 using KitchenMods;
 using System.Linq;
 using System.Reflection;
-using Unity.Entities;
 using UnityEngine;
 
 // Namespace should have "Kitchen" in the beginning
@@ -36,8 +35,6 @@ namespace KitchenArchipelago
         private static readonly Harmony m_harmony = new(MOD_GUID);
         private ProfilePersistence m_settings;
         private Connection m_session;
-        private EntityQuery RecipeEntities;
-        private EntityQuery ApplianceEntities;
 
 
         public KitchenArchipelago() : base(MOD_GUID, MOD_NAME, MOD_AUTHOR, MOD_VERSION, MOD_GAMEVERSION, Assembly.GetExecutingAssembly()) { }
@@ -47,10 +44,7 @@ namespace KitchenArchipelago
             m_harmony.PatchAll(Assembly.GetExecutingAssembly());
             LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
             Players.Main.OnPlayerInfoChanged += OnPlayerInfoChanged;
-            ApplianceEntities = GetEntityQuery(new QueryHelper()
-                .All(typeof(CAppliance))
-                .None(typeof(CUnsellableAppliance))
-            );
+            
         }
 
         private void OnPlayerInfoChanged()
