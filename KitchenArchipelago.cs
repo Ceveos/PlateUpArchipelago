@@ -49,17 +49,13 @@ namespace KitchenArchipelago
 
         private void OnPlayerInfoChanged()
         {
-            LogInfo("[temp] Player info changed");
             PlayerInfo? player = Players.Main.All().FirstOrDefault(player => player.IsLocalUser && player.HasProfile);
 
             if (player.HasValue)
             {
-                LogInfo("[temp] Has value");
                 m_settings = ProfilePersistence.Load(player.Value.Profile);
 
-                LogInfo("[temp] Loading enabled variable");
                 bool enabled = m_settings.Get<bool>(Setting.Enabled);
-                LogInfo($"[temp] Value: {enabled}");
             }
             else
             {
