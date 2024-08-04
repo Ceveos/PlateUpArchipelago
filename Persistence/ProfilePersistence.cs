@@ -7,109 +7,66 @@ using UnityEngine;
 
 namespace KitchenArchipelago.Persistence
 {
-    public abstract class SettingEntry
-    {
-        [JsonProperty]
-        public string Name;
-
-    }
-
-    public class SettingEntry<T> : SettingEntry
-    {
-        [JsonProperty]
-        public T Value { get; set; }
-
-        public SettingEntry(string name, T value)
-        {
-            Name = name;
-            Value = value;
-        }
-    }
-
     public class ProfilePersistence
     {
-        private static readonly Lazy<ProfilePersistence> _instance = new(() => new ProfilePersistence());
-        private static ProfilePersistence Instance => _instance.Value;
-
+        private static ProfilePersistence _instance;
+        public static ProfilePersistence Instance
+        {
+            get
+            {
+                return _instance ??= new ProfilePersistence();
+            }
+        }
 
         private Kitchen.PlayerProfile _profile;
-        private Dictionary<string, SettingEntry> _persistentSettings = new Dictionary<string, SettingEntry>();
+        private Dictionary<string, object> data = new Dictionary<string, object>();
 
         private ProfilePersistence() { }
 
-        public T Get<T>(string name, T defaultValue = default)
+        public T Get<T>(string key, T defaultValue = default)
         {
-            if (_persistentSettings.TryGetValue(name, out SettingEntry entry))
+            if (data.ContainsKey(key))
             {
-                if (entry is SettingEntry<T> typedEntry)
-                {
-                    return typedEntry.Value;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"The entry '{name}' exists but is not of type '{typeof(T).Name}'.");
-                }
+                return (T)data[key];
+            }
+            return defaultValue;
+        }
+        public T Get<T>(Setting key)
+        {
+            var attribute = key.GetSettingAttribute();
+            return Get(attribute.Name, (T)attribute.DefaultValue);
+        }
+
+        // Generic setter
+        public void Set<T>(string key, T value)
+        {
+            if (data.ContainsKey(key))
+            {
+                data[key] = value;
             }
             else
             {
-                var newEntry = new SettingEntry<T>(name, defaultValue);
-                _persistentSettings[name] = newEntry;
-                return newEntry.Value;
+                data.Add(key, value);
             }
         }
-        public T Get<T>(Setting setting)
+        public void Set<T>(Setting key, T value)
         {
-            var attribute = setting.GetSettingAttribute();
-
-            if (attribute == null)
-                throw new InvalidOperationException("Setting not found");
-
-            var defaultValue = (T)Convert.ChangeType(attribute.DefaultValue, typeof(T));
-
-            return Get(attribute.Name, defaultValue);
-        }
-
-        public void Set<T>(string name, T value)
-        {
-            if (_persistentSettings.TryGetValue(name, out SettingEntry entry))
-            {
-                if (entry is SettingEntry<T> typedEntry)
-                {
-                    typedEntry.Value = value;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"The entry '{name}' exists but is not of type '{typeof(T).Name}'.");
-                }
-            }
-            else
-            {
-                var newEntry = new SettingEntry<T>(name, value);
-                _persistentSettings[name] = newEntry;
-            }
-        }
-
-        public void Set<T>(Setting setting, T value)
-        {
-            var attribute = setting.GetSettingAttribute();
-
-            if (attribute == null)
-                throw new InvalidOperationException("Setting not found");
-
+            var attribute = key.GetSettingAttribute();
             Set(attribute.Name, value);
         }
 
         public void Save()
         {
             KitchenArchipelago.LogInfo($"Saving settings for user {_profile.Name}.");
-            string jsonStr = JsonConvert.SerializeObject(_persistentSettings, Formatting.Indented);
+            KitchenArchipelago.LogInfo($"Writing to file path: {GetFilePath()}");
+            string jsonStr = JsonConvert.SerializeObject(data, Formatting.Indented);
             File.WriteAllText(GetFilePath(), jsonStr);
             KitchenArchipelago.LogInfo($"Settings saved successfully for user {_profile.Name}.");
         }
 
         private void setProfile(Kitchen.PlayerProfile profile)
         {
-            Instance._persistentSettings.Clear();
+            Instance.data.Clear();
             Instance._profile = profile;
         }
 
@@ -131,13 +88,14 @@ namespace KitchenArchipelago.Persistence
             {
                 KitchenArchipelago.LogInfo($"Setings file does not exist for user {profile.Name}. Creating default config.");
                 Instance.CreateDefaultConfig();
+                Instance.Save();
                 return Instance;
             }
 
             try
             {
                 var jsonStr = File.ReadAllText(filePath);
-                Instance._persistentSettings = JsonConvert.DeserializeObject<Dictionary<string, SettingEntry>>(jsonStr);
+                Instance.data = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonStr);
 
                 KitchenArchipelago.LogInfo($"Loaded settings for user {profile.Name} successfully.");
             }
@@ -154,14 +112,20 @@ namespace KitchenArchipelago.Persistence
 
         private void CreateDefaultConfig()
         {
-            Set("bActive", false);
-            Set("sHost", "archipelago.gg:");
-            Set("sUser", "");
+            KitchenArchipelago.LogInfo($"Creating default configuration file.");
+            foreach (Setting setting in Enum.GetValues(typeof(Setting))) {
+                var attributes = setting.GetSettingAttribute();
+                if (attributes != null)
+                {
+                    KitchenArchipelago.LogInfo("- Setting " + attributes.Name + " to " + attributes.DefaultValue.ToString());
+                    Set(attributes.Name, attributes.DefaultValue);
+                }
+            }   
         }
 
         public string GetFilePath()
         {
-            return Path.Combine(Application.persistentDataPath, $"archipelago_{ToFileNameFriendlyString(_profile.Name)}");
+            return $"{Application.persistentDataPath}/archipelago_{ToFileNameFriendlyString(_profile.Name)}.json";
         }
 
         public static string ToFileNameFriendlyString(string input)

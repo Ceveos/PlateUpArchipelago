@@ -54,6 +54,8 @@ namespace KitchenArchipelago
             if (player.HasValue)
             {
                 m_settings = ProfilePersistence.Load(player.Value.Profile);
+
+                bool enabled = m_settings.Get<bool>(Setting.Enabled);
             }
             else
             {

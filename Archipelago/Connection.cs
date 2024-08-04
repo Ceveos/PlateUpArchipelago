@@ -56,13 +56,13 @@ namespace KitchenArchipelago.Archipelago
 
                 KitchenArchipelago.LogError(errorMessage);
 
-                OnDisconnected?.Invoke(this, null);
+                //OnDisconnected?.Invoke(this, null);
                 return; // Did not connect, show the user the contents of `errorMessage`
             }
 
             // Successfully connected, `ArchipelagoSession` (assume statically defined as `session` from now on) can now be used to interact with the server and the returned `LoginSuccessful` contains some useful information about the initial connection (e.g. a copy of the slot data as `loginSuccess.SlotData`)
             var loginSuccess = (LoginSuccessful)result;
-            OnConnected?.Invoke(this, null);
+            //OnConnected?.Invoke(this, null);
         }
 
     }

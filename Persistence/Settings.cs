@@ -5,7 +5,7 @@ namespace KitchenArchipelago.Persistence
 {
     public enum Setting
     {
-        [Setting("bEnabled", false, "Whether or not this extension is enabled (for this profile).")]
+        [Setting("bEnabled", true, "Whether or not this extension is enabled (for this profile).")]
         Enabled,
 
         [Setting("sHost", "archipelago.gg:", "Archipelago host name")]
@@ -17,10 +17,10 @@ namespace KitchenArchipelago.Persistence
         [Setting("sPassword", "", "Archipelago room password")]
         Password,
 
-        [Setting("aUnlockedAppliances", new string[] { }, "Unlocked appliances")]
+        [Setting("asUnlockedAppliances", new string[] { }, "Unlocked appliances")]
         UnlockedAppliances,
 
-        [Setting("aChecksCompleted", new string[] { }, "Checks completed")]
+        [Setting("asChecksCompleted", new string[] { }, "Checks completed")]
         ChecksCompleted,
     }
 
