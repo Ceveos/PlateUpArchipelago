@@ -5,7 +5,7 @@ namespace KitchenArchipelago.Persistence
 {
     public enum Setting
     {
-        [Setting("bEnabled", true, "Whether or not this extension is enabled (for this profile).")]
+        [Setting("bEnabled", false, "Whether or not this extension is enabled (for this profile).")]
         Enabled,
 
         [Setting("sHost", "archipelago.gg:", "Archipelago host name")]

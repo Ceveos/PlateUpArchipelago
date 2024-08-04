@@ -57,11 +57,11 @@ namespace KitchenArchipelago.Persistence
 
         public void Save()
         {
-            KitchenArchipelago.LogInfo($"Saving settings for user {_profile.Name}.");
-            KitchenArchipelago.LogInfo($"Writing to file path: {GetFilePath()}");
+            KitchenArchipelago.Logger.LogInfo($"Saving settings for user {_profile.Name}.");
+            KitchenArchipelago.Logger.LogInfo($"Writing to file path: {GetFilePath()}");
             string jsonStr = JsonConvert.SerializeObject(data, Formatting.Indented);
             File.WriteAllText(GetFilePath(), jsonStr);
-            KitchenArchipelago.LogInfo($"Settings saved successfully for user {_profile.Name}.");
+            KitchenArchipelago.Logger.LogInfo($"Settings saved successfully for user {_profile.Name}.");
         }
 
         private void setProfile(Kitchen.PlayerProfile profile)
@@ -72,12 +72,12 @@ namespace KitchenArchipelago.Persistence
 
         public static ProfilePersistence Load(Kitchen.PlayerProfile profile, bool forceReload = false)
         {
-            KitchenArchipelago.LogInfo($"Loading settings for user {profile.Name}.");
+            KitchenArchipelago.Logger.LogInfo($"Loading settings for user {profile.Name}.");
 
             // If user is already loaded, return profile.
             if (!forceReload && Instance._profile == profile)
             {
-                KitchenArchipelago.LogInfo($"Profile already loaded. Returning early.");
+                KitchenArchipelago.Logger.LogInfo($"Profile already loaded. Returning early.");
                 return Instance;
             }
 
@@ -86,7 +86,7 @@ namespace KitchenArchipelago.Persistence
             var filePath = Instance.GetFilePath();
             if (!File.Exists(filePath))
             {
-                KitchenArchipelago.LogInfo($"Setings file does not exist for user {profile.Name}. Creating default config.");
+                KitchenArchipelago.Logger.LogInfo($"Setings file does not exist for user {profile.Name}. Creating default config.");
                 Instance.CreateDefaultConfig();
                 Instance.Save();
                 return Instance;
@@ -97,12 +97,12 @@ namespace KitchenArchipelago.Persistence
                 var jsonStr = File.ReadAllText(filePath);
                 Instance.data = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonStr);
 
-                KitchenArchipelago.LogInfo($"Loaded settings for user {profile.Name} successfully.");
+                KitchenArchipelago.Logger.LogInfo($"Loaded settings for user {profile.Name} successfully.");
             }
             catch (Exception e)
             {
-                KitchenArchipelago.LogError($"Error loading settings for user {profile.Name}: {e.Message}");
-                KitchenArchipelago.LogError($"Resetting back to default values.");
+                KitchenArchipelago.Logger.LogError($"Error loading settings for user {profile.Name}: {e.Message}");
+                KitchenArchipelago.Logger.LogError($"Resetting back to default values.");
                 Instance.CreateDefaultConfig();
 
             }
@@ -112,12 +112,12 @@ namespace KitchenArchipelago.Persistence
 
         private void CreateDefaultConfig()
         {
-            KitchenArchipelago.LogInfo($"Creating default configuration file.");
+            KitchenArchipelago.Logger.LogInfo($"Creating default configuration file.");
             foreach (Setting setting in Enum.GetValues(typeof(Setting))) {
                 var attributes = setting.GetSettingAttribute();
                 if (attributes != null)
                 {
-                    KitchenArchipelago.LogInfo("- Setting " + attributes.Name + " to " + attributes.DefaultValue.ToString());
+                    KitchenArchipelago.Logger.LogInfo("- Setting " + attributes.Name + " to " + attributes.DefaultValue.ToString());
                     Set(attributes.Name, attributes.DefaultValue);
                 }
             }   
