@@ -17,10 +17,10 @@ namespace KitchenArchipelago.Persistence
         [Setting("sPassword", "", "Archipelago room password")]
         Password,
 
-        [Setting("aUnlockedAppliances", new string[] { }, "Unlocked appliances")]
+        [Setting("asUnlockedAppliances", new string[] { }, "Unlocked appliances")]
         UnlockedAppliances,
 
-        [Setting("aChecksCompleted", new string[] { }, "Checks completed")]
+        [Setting("asChecksCompleted", new string[] { }, "Checks completed")]
         ChecksCompleted,
     }
 

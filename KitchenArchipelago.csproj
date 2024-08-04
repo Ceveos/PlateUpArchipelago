@@ -14,6 +14,7 @@
 		<WorkshopDir>$(ProjectDir)content</WorkshopDir>
     <EnableDocumentation>true</EnableDocumentation>
     <EnableAutoLocalModsReferences>false</EnableAutoLocalModsReferences>
+    <EnableGameDebugging>true</EnableGameDebugging>
 		<!-- ASSET BUNDLES -->
 
 		<!-- Set the next line to 'true' if you have an asset bundle -->
