@@ -23,12 +23,18 @@ namespace KitchenArchipelago.Archipelago
             }
         }
 
-        public async void Connect(ProfilePersistence settings)
+        public async void Connect()
         {
+            if (!Settings.Enabled)
+            {
+                KitchenArchipelago.Logger.LogError("Attempted to connect to Archipelago with non-enabled profile");
+                return;
+            }
+
             LoginResult result;
-            string server = settings.Get<string>(Setting.Host);
-            string user = settings.Get<string>(Setting.User);
-            string password = settings.Get<string>(Setting.Password);
+            string server = Settings.Get<string>(ProfileConfig.Host);
+            string user = Settings.Get<string>(ProfileConfig.User);
+            string password = Settings.Get<string>(ProfileConfig.Password);
 
             Session = ArchipelagoSessionFactory.CreateSession(server);
 

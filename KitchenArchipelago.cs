@@ -1,11 +1,13 @@
 ﻿using Kitchen;
 using KitchenArchipelago.Archipelago;
+using KitchenArchipelago.Entities;
 using KitchenArchipelago.Persistence;
 using KitchenLib;
 using KitchenLib.Logging;
 using KitchenMods;
 using System.Linq;
 using System.Reflection;
+using Unity.Entities;
 
 // Namespace should have "Kitchen" in the beginning
 namespace KitchenArchipelago
@@ -25,8 +27,6 @@ namespace KitchenArchipelago
         // e.g. ">=1.1.3 <=1.2.3" for all from/until
 
         internal static KitchenLogger Logger;
-
-        private ProfilePersistence m_settings;
         private Connection m_session;
 
 
@@ -35,6 +35,9 @@ namespace KitchenArchipelago
         protected override void OnInitialise()
         {
             Logger.LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
+            if (!TryGetSingletonEntity<SArchipelago>(out Entity singletonEnt))
+                singletonEnt = EntityManager.CreateEntity(typeof(SArchipelago));
+            
             Players.Main.OnPlayerInfoChanged += OnPlayerInfoChanged;
             
         }
@@ -49,11 +52,7 @@ namespace KitchenArchipelago
 
             if (player.HasValue)
             {
-                m_settings = ProfilePersistence.Load(player.Value.Profile);
-            }
-            else
-            {
-                m_settings = null;
+                Settings.Load(player.Value.Profile);
             }
             OnSettingsChanged();
         }
@@ -63,10 +62,9 @@ namespace KitchenArchipelago
         /// </summary>
         private void OnSettingsChanged()
         {
-            bool enabled = m_settings.Get<bool>(Setting.Enabled);
-            if (enabled)
+            if (Settings.Enabled)
             {
-                Connection.Instance.Connect(m_settings);
+                Connection.Instance.Connect();
             }
             else
             {
