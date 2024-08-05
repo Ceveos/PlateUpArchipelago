@@ -1,6 +1,6 @@
 ﻿using Kitchen;
 using KitchenArchipelago.Archipelago;
-using KitchenArchipelago.Entities;
+using KitchenArchipelago.Components;
 using KitchenArchipelago.Persistence;
 using KitchenLib;
 using KitchenLib.Logging;
@@ -35,8 +35,8 @@ namespace KitchenArchipelago
         protected override void OnInitialise()
         {
             Logger.LogWarning($"{MOD_GUID} v{MOD_VERSION} in use!");
-            if (!TryGetSingletonEntity<SArchipelago>(out Entity singletonEnt))
-                singletonEnt = EntityManager.CreateEntity(typeof(SArchipelago));
+            //if (!TryGetSingletonEntity<SArchipelago>(out Entity singletonEnt))
+            //    singletonEnt = EntityManager.CreateEntity(typeof(SArchipelago));
             
             Players.Main.OnPlayerInfoChanged += OnPlayerInfoChanged;
             
@@ -64,11 +64,11 @@ namespace KitchenArchipelago
         {
             if (Settings.Enabled)
             {
-                Connection.Instance.Connect();
+                //Connection.Instance.Connect();
             }
             else
             {
-                Connection.Instance.Disconnect();
+                //Connection.Instance.Disconnect();
             }
         }
         protected override void OnUpdate()

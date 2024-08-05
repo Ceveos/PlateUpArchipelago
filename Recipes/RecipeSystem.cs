@@ -1,18 +1,15 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenMods;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KitchenArchipelago.Recipes
 {
-    internal class RecipeSystem : FranchiseFirstFrameSystem, IModSystem
+    internal class RecipeSystem : FranchiseSystem, IModSystem
     {
         protected override void OnUpdate()
         {
+            
             //throw new NotImplementedException();
         }
 

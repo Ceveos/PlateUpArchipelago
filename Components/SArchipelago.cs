@@ -4,8 +4,9 @@ using Unity.Entities;
 
 namespace KitchenArchipelago.Components
 {
-    internal struct SArchipelago : IComponentData
-    {
-        public Connection connection;
-    }
+    //internal struct SArchipelago : IComponentData
+    //{
+    //    public Connection connection = Connection.Instance;
+
+    //}
 }

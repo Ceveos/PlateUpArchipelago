@@ -29,7 +29,7 @@ namespace KitchenArchipelago.Persistence
         [Config("fBlueprintCostModifier", 1.5f, "Affects how expensive blueprints are.")]
         BlueprintCostModifier,
 
-        [Config("fCustomerPatienceModifier", 0.75f, "Affects how expensive blueprints are.")]
+        [Config("fCustomerPatienceModifier", 0.75f, "Affects how fast patience runs out for customers.")]
         CustomerPatienceModifier,
 
         [Config("saUnlockedRecipes", new string[] { }, "All unlocked recipes.")]
